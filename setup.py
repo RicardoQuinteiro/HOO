@@ -13,5 +13,6 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "gym==0.26.2",
+        "matplotlib==3.7.1"
     ],
 )
