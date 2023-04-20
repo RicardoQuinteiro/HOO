@@ -50,4 +50,4 @@ class HOOState:
 
     @property
     def dimension(self):
-        return self.dim
+        return self.action_space.dim
