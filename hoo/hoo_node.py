@@ -69,7 +69,7 @@ class HOONode:
         return self.h == self.max_depth
 
     def leaf(self) -> bool:
-        return len(self.children) == 0 or self.is_max_depth
+        return len(self.children) == 0 or self.is_max_depth()
 
     def root(self) -> bool:
         return self.h == 0
@@ -82,28 +82,27 @@ class HOONode:
         Generates two new HOO nodes to the children, by splitting the action
         space into two halves
         """
-        if not self.is_max_depth():
-            lower_space, upper_space = self.action_space.split(
-                self.split_dimension
-            )
+        lower_space, upper_space = self.action_space.split(
+            self.split_dimension
+        )
 
-            self.children.append(
-                HOONode(
-                    lower_space,
-                    max_depth=self.max_depth,
-                    depth=self.h + 1,
-                    parent=self,
-                )
+        self.children.append(
+            HOONode(
+                lower_space,
+                max_depth=self.max_depth,
+                depth=self.h + 1,
+                parent=self,
             )
+        )
 
-            self.children.append(
-                HOONode(
-                    upper_space,
-                    max_depth=self.max_depth,
-                    depth=self.h + 1,
-                    parent=self,
-                )
+        self.children.append(
+            HOONode(
+                upper_space,
+                max_depth=self.max_depth,
+                depth=self.h + 1,
+                parent=self,
             )
+        )
 
     def choose_child(self) -> HOONode:
         """
