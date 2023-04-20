@@ -1,7 +1,8 @@
 """Module that implements an Environment abstract class"""
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
-import gym
 from dataclasses import dataclass
 
 from hoo.state_actions.action_space import HOOActionSpace
@@ -10,7 +11,7 @@ from hoo.state_actions.action_space import HOOActionSpace
 @dataclass
 class StepOutput:
 
-    previous_state: gym.Env
+    previous_state: Environment
     reward: float
     done: bool
 
