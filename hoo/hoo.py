@@ -5,9 +5,6 @@ https://arxiv.org/abs/1001.4475
 import math
 from typing import List, Optional
 
-# import numpy as np
-# import matplotlib.pyplot as plt
-
 from hoo.hoo_node import HOONode
 from hoo.state_actions.hoo_state import HOOState
 
@@ -193,77 +190,3 @@ class HOO:
         """
         best_node = self.choose_best_node(self.root)
         return best_node.sample()
-
-    """
-    def depth(self, node):
-        if node.leaf():
-            return 1
-        else:
-            return 1 + max(
-                self.depth(node.children[0]), self.depth(node.children[1])
-            )
-
-    def compute_for_plot(self, node, depth=False):
-        if node.leaf():
-            if depth:
-                return [[node.center], [node.h], [node.N]]
-            else:
-                return [[], []]
-        else:
-            x = []
-            y = []
-            s = []
-            for child in node.children:
-                result = self.compute_for_plot(child, depth=depth)
-                x += result[0]
-                y += result[1]
-                if depth:
-                    s += result[2]
-        if depth:
-            return [x + [node.center], y + [node.h], s + [1]]
-        return [x + [node.center], y + [node.h]]
-
-    def plot(self, f=False, show=True):
-        if self.state.dimension() != 1:
-            print("Plot not available for action space dimension != 1.")
-            return
-
-        depth = self.hoo_max_depth < float("inf")
-
-        data = self.compute_for_plot(self.root, depth=depth)
-        x = np.array(data[0])
-        y = np.array(data[1])
-        fx = np.linspace(0, 1, 200)
-
-        plt.figure()
-
-        if f:
-            fy = [ftest(xx) for xx in fx]
-
-            fig, ax1 = plt.subplots()
-            ax1.plot(fx, fy, c="firebrick")
-            ax1.set_xlabel("x")
-            ax1.set_ylabel("reward")
-            ax1.tick_params("y", colors="firebrick")
-
-            ax2 = ax1.twinx()
-            if depth:
-                s = np.array(data[2])
-                ax2.scatter(x, y, s=s, c="royalblue")
-            else:
-                ax2.scatter(x, y, s=10, c="royalblue")
-            ax2.set_ylabel("depth")
-            ax2.set_yticks([i for i in range(max(y) + 1)])
-            ax2.tick_params("y", colors="royalblue")
-            if show:
-                plt.show()
-            return
-
-        if depth:
-            s = np.array(data[2])
-            plt.scatter(x, y, s=s, c="royalblue")
-        else:
-            plt.scatter(x, y, s=10, c="royalblue")
-
-        if show:
-            plt.show()"""
