@@ -19,7 +19,7 @@ class StepOutput:
 class Environment(ABC):
 
     @abstractmethod
-    def step(self, action) -> StepOutput:
+    def step(self, action, clip_reward: bool) -> StepOutput:
         pass
 
     @property
