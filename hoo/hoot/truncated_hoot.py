@@ -18,6 +18,7 @@ class tHOOT(HOOT):
         gamma: float = 0.99,
         v1: Optional[float] = None,
         ce: float = 1.,
+        clip_reward: bool = True,
     ):
         """
         Initializes the truncated HOOT algorithm
@@ -34,6 +35,7 @@ class tHOOT(HOOT):
                 less appealing nodes the higher it is
         """
         self.search_depth = search_depth
+        self.clip_reward = clip_reward
 
         self.root = tHOOTNode(
             initial_state,

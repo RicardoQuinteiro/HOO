@@ -12,6 +12,7 @@ from hoo.hoot.hoot import HOOT
 from hoo.hoot.poly_hoot_node import PolyHOOTNode
 from hoo.poly_hoo import PolyHOOConstants
 from hoo.state_actions.hoo_state import HOOState
+from hoo.experiments.run_configs import PolyHOOTRunConfigs
 
 
 class PolyHOOT(HOOT):
@@ -25,6 +26,7 @@ class PolyHOOT(HOOT):
         v1: Optional[float] = None,
         ce: float = 1.,
         polyhoo_constants: PolyHOOConstants = PolyHOOConstants(),
+        clip_reward: bool = True,
     ):
         """
         Initializes the Poly-HOOT algorithm
@@ -42,6 +44,7 @@ class PolyHOOT(HOOT):
             polyhoo_constants: constants alpha, xi and eta used in Poly-HOO
         """
         self.search_depth = search_depth
+        self.clip_reward = clip_reward
 
         self.root = PolyHOOTNode(
             initial_state,
@@ -49,5 +52,36 @@ class PolyHOOT(HOOT):
             gamma=gamma,
             v1=v1,
             ce=ce,
+            polyhoo_constants=polyhoo_constants,
+        )
+
+    @classmethod
+    def from_configs(
+        cls,
+        configs: PolyHOOTRunConfigs,
+        initial_state: HOOState
+    ):
+        """
+        Initializes Poly-HOOT from run configs and an initial state
+
+        Args:
+            configs: a set of configurations for a HOOT run
+            initial_state: the initial state for the run
+        Returns:
+            An instance of Poly-HOOT initialized from the run configs
+        """
+        polyhoo_constants = PolyHOOConstants(
+            alpha=configs.alpha,
+            eta=configs.eta,
+            xi=configs.xi,
+        )
+
+        return cls(
+            configs.search_depth,
+            initial_state,
+            polyhoo_max_depth=configs.hoo_max_depth,
+            gamma=configs.gamma,
+            v1=configs.v1,
+            ce=configs.ce,
             polyhoo_constants=polyhoo_constants,
         )
