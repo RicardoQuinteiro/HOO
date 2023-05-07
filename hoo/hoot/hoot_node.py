@@ -36,13 +36,17 @@ class HOOTNode:
         self.depth = depth
         self.gamma = gamma
 
-        self.hoo = HOO(state, v1=v1, ce=self.ce)
+        self.v1 = v1
+        self.ce = ce
+
+        self.hoo = HOO(state, v1=v1, ce=ce)
 
         self.children = {}
 
     def select_action(
         self,
         sample: bool = True,
+        clip_reward: bool = True,
     ) -> Tuple[HOOTNode, SimulateOutput]:
         """
         Selects an action using HOO
@@ -63,7 +67,7 @@ class HOOTNode:
         else:
             action = hoo_node.center
 
-        simulation_output = self.state.simulate(action)
+        simulation_output = self.state.simulate(action, clip_reward)
         child_index = str(hoo_node.center)
 
         if self.children.get(child_index) is None:
@@ -72,6 +76,7 @@ class HOOTNode:
                 parent=self,
                 gamma=self.gamma,
                 depth=self.depth + 1,
+                v1=self.v1,
                 ce=self.ce,
             )
             self.children[child_index] = next_node
@@ -80,7 +85,12 @@ class HOOTNode:
 
         return next_node, simulation_output
 
-    def backpropagate(self, rewards: List[float], t: int) -> None:
+    def backpropagate(
+        self,
+        rewards: List[float],
+        t: int,
+        clip_reward: bool = True,
+    ) -> None:
         """
         Backpropagates the rewards through the HOOT tree
 
@@ -88,13 +98,21 @@ class HOOTNode:
             rewards: a list with the rewards obtained after one iteration of
                 the HOOT tree search
             t: time-step
+            max_reward: if given a max_reward, the rewards will be normalized
         """
         cumulative_reward = sum(
-            [r*self.gamma**i for i, r in enumerate(rewards)]
+            [r*self.gamma**i for i, r in enumerate(rewards[self.depth:])]
         )
+
+        if clip_reward:
+            cumulative_reward = cumulative_reward / sum([
+                self.gamma**i
+                for i in range(len(rewards[self.depth:]))
+            ])
+
         self.hoo.backpropagate(cumulative_reward, t)
         if not self.root():
-            self.parent.backpropagate(rewards[:-1], t)
+            self.parent.backpropagate(rewards, t)
 
     def choose_best_action(self):
         """
@@ -111,3 +129,7 @@ class HOOTNode:
 
     def leaf(self) -> bool:
         return len(self.children) == 0
+
+    @property
+    def max_reward(self) -> bool:
+        return self.state.max_reward
