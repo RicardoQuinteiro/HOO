@@ -19,7 +19,7 @@ class HOOActionSpace:
 
     @property
     def center(self) -> List[float]:
-        [(a + b) / 2.0 for a, b in self.space]
+        return [(a + b) / 2.0 for a, b in self.space]
 
     @property
     def low(self) -> List[float]:
