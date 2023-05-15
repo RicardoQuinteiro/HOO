@@ -26,7 +26,7 @@ class PolyHOOT(HOOT):
         v1: Optional[float] = None,
         ce: float = 1.,
         polyhoo_constants: PolyHOOConstants = PolyHOOConstants(),
-        clip_reward: bool = True,
+        clip_reward: bool = False,
     ):
         """
         Initializes the Poly-HOOT algorithm

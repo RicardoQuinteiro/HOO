@@ -41,7 +41,7 @@ class HOOTNode:
         self.v1 = v1
         self.ce = ce
 
-        self.hoo = HOO(state, v1=v1, ce=ce)
+        self.hoo = HOO(self.state, v1=v1, ce=ce)
 
         self.children = {}
 

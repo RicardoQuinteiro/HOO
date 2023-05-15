@@ -49,13 +49,13 @@ class HOO:
         Returns:
             A recommended action sampled from the best node
         """
-        for t in range(n):
+        for t in range(1, n + 1):
             selected_node = self.generate_path()
 
             action = selected_node.sample()
             reward = self.state.simulate(action).reward
 
-            self.backpropagate(reward, t+1)
+            self.backpropagate(reward, t)
 
         best_node = self.choose_best_node(self.root)
         return best_node.sample()
