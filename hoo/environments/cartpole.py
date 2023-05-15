@@ -95,12 +95,7 @@ class ContinuousCartPole(CartPoleEnv, Environment):
 
         if not terminated:
             reward = 1.0
-        elif self.steps_beyond_terminated is None:
-            # Pole just fell!
-            self.steps_beyond_terminated = 0
-            reward = 1.0
         else:
-            self.steps_beyond_terminated += 1
             reward = 0.0
 
         if self.render_mode == "human":
