@@ -97,7 +97,7 @@ class HOOT:
                 clip_reward=self.clip_reward,
             )
             rewards.append(simulation_output.reward)
-            
+
             if simulation_output.done:
                 rewards += [
                     rewards[-1]
