@@ -14,6 +14,7 @@ class HOOTNode:
         self,
         state: HOOState,
         parent: Optional[HOOTNode] = None,
+        action: Optional[List] = None,
         gamma: float = 0.99,
         depth: int = 0,
         v1: Optional[float] = None,
@@ -33,6 +34,7 @@ class HOOTNode:
         """
         self.state = state
         self.parent = parent
+        self.action = action
         self.depth = depth
         self.gamma = gamma
 
@@ -74,6 +76,7 @@ class HOOTNode:
             next_node = HOOTNode(
                 simulation_output.next_state,
                 parent=self,
+                action=action,
                 gamma=self.gamma,
                 depth=self.depth + 1,
                 v1=self.v1,
@@ -98,7 +101,7 @@ class HOOTNode:
             rewards: a list with the rewards obtained after one iteration of
                 the HOOT tree search
             t: time-step
-            max_reward: if given a max_reward, the rewards will be normalized
+            clip_reward: if True the rewards will be normalized
         """
         cumulative_reward = sum(
             [r*self.gamma**i for i, r in enumerate(rewards[self.depth:])]
@@ -129,7 +132,3 @@ class HOOTNode:
 
     def leaf(self) -> bool:
         return len(self.children) == 0
-
-    @property
-    def max_reward(self) -> bool:
-        return self.state.max_reward
