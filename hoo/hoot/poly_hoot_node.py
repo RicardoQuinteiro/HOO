@@ -1,7 +1,7 @@
 """Module that implements a Poly-HOOT node"""
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
 
 from hoo.state_actions.hoo_state import HOOState
 from hoo.poly_hoo import PolyHOO, PolyHOOConstants
@@ -15,6 +15,7 @@ class PolyHOOTNode(HOOTNode):
         state: HOOState,
         polyhoo_max_depth,
         parent: Optional[PolyHOOTNode] = None,
+        action: Optional[List] = None,
         gamma: float = 0.99,
         depth: int = 0,
         v1: Optional[float] = None,
@@ -38,8 +39,11 @@ class PolyHOOTNode(HOOTNode):
         super().__init__(
             state,
             parent=parent,
-            depth=depth,
+            action=action,
             gamma=gamma,
+            depth=depth,
+            v1=v1,
+            ce=ce,
         )
 
         self.vars = vars

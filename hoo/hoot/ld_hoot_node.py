@@ -1,7 +1,7 @@
 """Module that implements a LD-HOOT node"""
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
 
 from hoo.state_actions.hoo_state import HOOState
 from hoo.ld_hoo import LDHOO
@@ -15,6 +15,7 @@ class LDHOOTNode(HOOTNode):
         state: HOOState,
         ldhoo_max_depth,
         parent: Optional[LDHOOTNode] = None,
+        action: Optional[List] = None,
         gamma: float = 0.99,
         depth: int = 0,
         v1: Optional[float] = None,
@@ -36,8 +37,11 @@ class LDHOOTNode(HOOTNode):
         super().__init__(
             state,
             parent=parent,
-            depth=depth,
+            action=action,
             gamma=gamma,
+            depth=depth,
+            v1=v1,
+            ce=ce,
         )
 
         self.vars = vars
