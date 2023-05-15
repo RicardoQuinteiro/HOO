@@ -15,5 +15,6 @@ setup(
         "gym==0.26.2",
         "matplotlib==3.7.1",
         "pydantic==1.10.4",
+        "tqdm==4.65.0",
     ],
 )

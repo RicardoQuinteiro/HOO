@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Optional, Union
 
 import numpy as np
+from tqdm.auto import tqdm
 
 from hoo.state_actions.hoo_state import HOOState
 from hoo.hoot.hoot import HOOT
@@ -49,7 +50,7 @@ def generate_hoot_path(configs: HOOTRunConfigs):
     )
 
     initial_time = time.time()
-    for _ in range(configs.n_actions):
+    for _ in tqdm(range(configs.n_actions)):
         if configs.seed is not None:
             set_seed(configs.seed)
         action = hoot_algorithm.run(configs.algorithm_iter)
