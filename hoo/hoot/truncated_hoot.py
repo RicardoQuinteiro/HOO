@@ -18,7 +18,7 @@ class tHOOT(HOOT):
         gamma: float = 0.99,
         v1: Optional[float] = None,
         ce: float = 1.,
-        clip_reward: bool = True,
+        clip_reward: bool = False,
     ):
         """
         Initializes the truncated HOOT algorithm

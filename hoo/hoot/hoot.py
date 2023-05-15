@@ -18,7 +18,7 @@ class HOOT:
         gamma: float = 0.99,
         v1: Optional[float] = None,
         ce: float = 1.,
-        clip_reward: bool = True,
+        clip_reward: bool = False,
     ):
         """
         Initializes the HOOT algorithm
@@ -97,7 +97,7 @@ class HOOT:
                 clip_reward=self.clip_reward,
             )
             rewards.append(simulation_output.reward)
-
+            
             if simulation_output.done:
                 rewards += [
                     rewards[-1]
