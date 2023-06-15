@@ -5,6 +5,8 @@ from typing import Optional
 LIST_OF_ENVIRONMENTS = [
     "cartpole",
     "inverted_pendulum",
+    "mountain_car",
+    "lunar_lander",
 ]
 
 
@@ -38,6 +40,7 @@ class HOOTRunConfigs:
             "gamma": self.gamma,
             "v1": self.v1,
             "ce": self.ce,
+            "seed": self.seed,
         }
 
 

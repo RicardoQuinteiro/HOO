@@ -16,7 +16,7 @@ class InvertedPendulum(PendulumEnv, Environment):
         super().__init__()
         self.reset(seed=seed)
 
-    def step(self, action, clip_reward: bool = True):
+    def step(self, action, clip_reward: bool = False):
 
         previous_state = deepcopy(self)
         _, reward, done, _, _ = super().step(action)
@@ -27,4 +27,4 @@ class InvertedPendulum(PendulumEnv, Environment):
 
     @property
     def hoo_action_space(self):
-        return HOOActionSpace([(self.max_torque, self.max_torque)])
+        return HOOActionSpace([(-self.max_torque, self.max_torque)])

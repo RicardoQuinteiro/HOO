@@ -13,6 +13,8 @@ from hoo.hoot.hoot import HOOT
 from hoo.hoot.ld_hoot import LDHOOT
 from hoo.hoot.poly_hoot import PolyHOOT
 from hoo.hoot.truncated_hoot import tHOOT
+from hoo.environments.lunar_lander import LunarLander
+from hoo.environments.mountain_car import MountainCar
 from hoo.environments.cartpole import ContinuousCartPole
 from hoo.environments.inverted_pendulum import InvertedPendulum
 from hoo.experiments.run_configs import HOOTRunConfigs
@@ -29,6 +31,8 @@ STR_TO_ALGORITHM = {
 STR_TO_ENVIRONMENT = {
     "cartpole": ContinuousCartPole,
     "inverted_pendulum": InvertedPendulum,
+    "mountain_car": MountainCar,
+    "lunar_lander": LunarLander,
 }
 
 
@@ -43,7 +47,9 @@ def generate_hoot_path(configs: HOOTRunConfigs):
         "rewards": [],
     }
 
-    state = HOOState(STR_TO_ENVIRONMENT[configs.environment]())
+    state = HOOState(
+        STR_TO_ENVIRONMENT[configs.environment](seed=configs.seed)
+    )
     hoot_algorithm = STR_TO_ALGORITHM[configs.algorithm].from_configs(
         configs,
         state,
@@ -80,7 +86,10 @@ def simulate_run(
     run_output = generate_hoot_path(configs)
 
     now = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    filename = now.replace(" ", "__").replace(":", "_")
+    if configs.seed is not None:
+        filename = configs.seed
+    else:
+        filename = now.replace(" ", "__").replace(":", "_")
 
     output = {
         **run_output,

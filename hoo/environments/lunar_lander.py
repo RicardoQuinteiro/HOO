@@ -1,20 +1,20 @@
 """
-Module that implements a modified version of Open AI gym's Continuous
-Mountain Car environment
+Module that implements a modified version of Open AI gym's Lunar Lander
+environment
 """
 from copy import deepcopy
 from typing import Optional
 
-from gym.envs.classic_control import Continuous_MountainCarEnv
+from gym.envs.box2d import LunarLander as LunarLanderEnv
 
 from hoo.environments.environment import Environment, StepOutput
 from hoo.state_actions.action_space import HOOActionSpace
 
 
-class MountainCar(Continuous_MountainCarEnv, Environment):
+class LunarLander(LunarLanderEnv, Environment):
 
     def __init__(self, seed: Optional[int] = None):
-        super().__init__()
+        super().__init__(continuous=True)
         self.reset(seed=seed)
 
     def step(self, action, clip_reward: bool = False):
@@ -28,4 +28,4 @@ class MountainCar(Continuous_MountainCarEnv, Environment):
 
     @property
     def hoo_action_space(self):
-        return HOOActionSpace([(self.min_action, self.max_action)])
+        return HOOActionSpace([(-1, 1), (-1, 1)])

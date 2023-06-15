@@ -14,6 +14,7 @@ class tHOO(HOO):
     def __init__(
         self,
         state: HOOState,
+        n0: int,
         v1: Optional[float] = None,
         ce: float = 1.,
     ):
@@ -22,6 +23,7 @@ class tHOO(HOO):
 
         Args:
             state: initial state
+            n0: number of iterations to run the algorithm
             v1: parameter of the algorithm as defined in the paper
             ce: exploration constant that gives more emphasis to exploring
                 less appealing nodes the higher it its
@@ -37,7 +39,7 @@ class tHOO(HOO):
         Returns:
             A recommended action sampled from the best node
         """
-        self.n = n
+        self.n0 = n
 
         return super().run(n)
 
@@ -53,7 +55,7 @@ class tHOO(HOO):
         for node in self.path:
             node.U = (
                 node.R / node.N
-                + self.ce * math.sqrt((2.0 * math.log(self.n)) / node.N)
+                + self.ce * math.sqrt((2.0 * math.log(self.n0)) / node.N)
                 + self.v1 * (self.rho**node.h)
             )
         node = self.path[-1]

@@ -49,7 +49,7 @@ class ContinuousCartPole(CartPoleEnv, Environment):
 
         self.reset(seed=seed)
 
-    def step(self, action, clip_reward: bool = True):
+    def step(self, action, clip_reward: bool = False):
 
         previous_state = deepcopy(self)
 
