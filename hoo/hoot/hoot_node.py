@@ -48,7 +48,6 @@ class HOOTNode:
     def select_action(
         self,
         sample: bool = True,
-        clip_reward: bool = True,
     ) -> Tuple[HOOTNode, SimulateOutput]:
         """
         Selects an action using HOO
@@ -64,12 +63,13 @@ class HOOTNode:
                 next state is terminal or not.
         """
         hoo_node = self.hoo.generate_path()
+
         if sample:
             action = hoo_node.sample()
         else:
             action = hoo_node.center
 
-        simulation_output = self.state.simulate(action, clip_reward)
+        simulation_output = self.state.simulate(action)
         child_index = str(hoo_node.center)
 
         if self.children.get(child_index) is None:
@@ -92,7 +92,6 @@ class HOOTNode:
         self,
         rewards: List[float],
         t: int,
-        clip_reward: bool = True,
     ) -> None:
         """
         Backpropagates the rewards through the HOOT tree
@@ -101,34 +100,43 @@ class HOOTNode:
             rewards: a list with the rewards obtained after one iteration of
                 the HOOT tree search
             t: time-step
-            clip_reward: if True the rewards will be normalized
         """
         cumulative_reward = sum(
             [r*self.gamma**i for i, r in enumerate(rewards[self.depth:])]
         )
 
-        if clip_reward:
-            cumulative_reward = cumulative_reward / sum([
-                self.gamma**i
-                for i in range(len(rewards[self.depth:]))
-            ])
-
         self.hoo.backpropagate(cumulative_reward, t)
         if not self.root():
             self.parent.backpropagate(rewards, t)
 
-    def choose_best_action(self):
+    def choose_best_action(self, sample: bool = True):
         """
         Returns an action sampled from the best node on this node's HOO tree
 
+        Args:
+            sample: if True will sample an action from node's actions space,
+                otherwise returns the center
         Returns:
             An action sampled from the HOO node with the current highest
                 average reward
         """
-        return self.hoo.choose_best_action()
+        return self.hoo.choose_best_action(sample=sample)
 
     def root(self) -> bool:
         return self.depth == 0
 
     def leaf(self) -> bool:
         return len(self.children) == 0
+
+    def reset(self) -> None:
+        self.parent = None
+        self.reset_depth()
+
+    def reset_depth(self, depth=0) -> None:
+        self.depth = depth
+
+        if self.children == {}:
+            return
+        else:
+            for child in self.children.values():
+                child.reset_depth(depth=depth + 1)

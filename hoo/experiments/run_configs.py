@@ -3,7 +3,9 @@ from typing import Optional
 
 
 LIST_OF_ENVIRONMENTS = [
+    "acrobot",
     "cartpole",
+    "ig_cartpole",
     "inverted_pendulum",
     "mountain_car",
     "lunar_lander",
@@ -18,6 +20,7 @@ class HOOTRunConfigs:
     search_depth: int
     algorithm_iter: int
 
+    clip_reward: bool = False
     gamma: float = 0.99
     v1: Optional[float] = None
     ce: float = 1.
@@ -45,20 +48,15 @@ class HOOTRunConfigs:
 
 
 @dataclass(kw_only=True)
-class tHOOTRunConfigs(HOOTRunConfigs):
-    algorithm: str = "tuncated_hoot"
-
-
-@dataclass(kw_only=True)
 class LDHOOTRunConfigs(HOOTRunConfigs):
     algorithm: str = "ld_hoot"
     hoo_max_depth: int
 
     def to_dict(self):
         return {
-                **super().to_dict(),
-                "hoo_max_depth": self.hoo_max_depth,
-            }
+            **super().to_dict(),
+            "hoo_max_depth": self.hoo_max_depth,
+        }
 
 
 @dataclass(kw_only=True)
@@ -71,8 +69,8 @@ class PolyHOOTRunConfigs(LDHOOTRunConfigs):
 
     def to_dict(self):
         return {
-                **super().to_dict(),
-                "alpha": self.alpha,
-                "eta": self.eta,
-                "xi": self.xi,
-            }
+            **super().to_dict(),
+            "alpha": self.alpha,
+            "eta": self.eta,
+            "xi": self.xi,
+        }

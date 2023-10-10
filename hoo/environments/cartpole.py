@@ -31,8 +31,10 @@ class ContinuousCartPole(CartPoleEnv, Environment):
         tau: float = 0.02,
         force_mag: float = 10.0,
         seed: Optional[int] = None,
+        clip_reward: bool = False,
     ):
         super().__init__()
+        self.clip_reward = clip_reward
 
         self.force_mag = force_mag
         self.action_space = spaces.Box(
@@ -110,3 +112,18 @@ class ContinuousCartPole(CartPoleEnv, Environment):
     @property
     def hoo_action_space(self):
         return HOOActionSpace([(-self.force_mag, self.force_mag)])
+
+
+class IGContinuousCartPole(ContinuousCartPole):
+
+    def __init__(self, seed: Optional[int] = None, clip_reward=False):
+        super().__init__(
+            gravity=50.,
+            masscart=1.0,
+            masspole=0.5,
+            length=2.,
+            tau=0.02,
+            force_mag=10.0,
+            seed=seed,
+            clip_reward=clip_reward,
+        )

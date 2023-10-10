@@ -41,8 +41,8 @@ class HOONode:
 
         self.R = 0
         self.N = 0
-        self.U = math.inf
-        self.B = math.inf
+        self.U = -math.inf
+        self.B = -math.inf
         self.max_depth = max_depth
 
         self.ready = False

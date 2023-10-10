@@ -35,12 +35,12 @@ class HOO:
         else:
             self.v1 = 4 * self.m
 
-        self.rho = 1.0 / (4**self.m)
+        self.rho = 2**(-2 / self.m)  # 1.0 / (4**self.m)
         self.ce = ce
 
         self.path = []
 
-    def run(self, n: int) -> List[float]:
+    def run(self, n: int, sample: bool = True) -> List[float]:
         """
         Runs n iterations of HOO
 
@@ -52,13 +52,12 @@ class HOO:
         for t in range(1, n + 1):
             selected_node = self.generate_path()
 
-            action = selected_node.sample()
+            action = selected_node.sample() if sample else selected_node.center
             reward = self.state.simulate(action).reward
 
             self.backpropagate(reward, t)
 
-        best_node = self.choose_best_node(self.root)
-        return best_node.sample()
+        return self.choose_best_action(sample=sample)
 
     def generate_path(self) -> None:
         """
@@ -165,28 +164,35 @@ class HOO:
         if node.leaf():
             return node
         else:
-            current_max = node.R / node.N
-            current_child = node
+            current_max = node.average_reward()
+            current_node = node
 
             for child in node.children:
                 child_best = self.choose_best_node(child)
 
-                if child_best.average_reward() > current_max:
-                    current_child = child_best
+                if child_best.average_reward() >= current_max:
+                    current_node = child_best
                     current_max = child_best.average_reward()
 
-            if current_max >= node.average_reward():
+            return current_node
+            """if current_max >= node.average_reward():
                 return current_child
             else:
-                return node
+                return node"""
 
-    def choose_best_action(self):
+    def choose_best_action(self, sample: bool = True):
         """
         Returns an action sampled from the best node
 
+        Args:
+            sample: if True will sample an action from node's actions space,
+                otherwise returns the center
         Returns:
             An action sampled from the node with the current highest
                 average reward
         """
         best_node = self.choose_best_node(self.root)
-        return best_node.sample()
+        if sample:
+            return best_node.sample()
+        else:
+            return best_node.center

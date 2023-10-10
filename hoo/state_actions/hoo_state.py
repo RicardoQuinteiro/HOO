@@ -27,7 +27,7 @@ class HOOState:
         self.env_state = env_state
         self.action_space = env_state.hoo_action_space
 
-    def simulate(self, action, clip_reward: bool = True):
+    def simulate(self, action):
         """
         Simulates an action in this state
 
@@ -38,7 +38,7 @@ class HOOState:
                 the reward of doing the input action and a boolean (done)
                 that informs if the action leads to a terminal state
         """
-        action_output = self.env_state.step(action, clip_reward=clip_reward)
+        action_output = self.env_state.step(action)
         next_env_state = deepcopy(self)
         self.env_state = action_output.previous_state
 

@@ -13,14 +13,24 @@ from hoo.state_actions.action_space import HOOActionSpace
 
 class MountainCar(Continuous_MountainCarEnv, Environment):
 
-    def __init__(self, seed: Optional[int] = None):
-        super().__init__()
+    def __init__(
+            self,
+            render_mode: Optional[str] = None,
+            goal_velocity=0,
+            seed: Optional[int] = None,
+            clip_reward: bool = False
+    ):
+        super().__init__(render_mode=render_mode, goal_velocity=goal_velocity)
         self.reset(seed=seed)
+        self.clip_reward = clip_reward
 
-    def step(self, action, clip_reward: bool = False):
+    def step(self, action):
 
         previous_state = deepcopy(self)
         _, reward, done, _, _ = super().step(action)
+
+        if self.clip_reward:
+            reward = (reward + 0.1) / 100.1
 
         return StepOutput(
             previous_state=previous_state, reward=reward, done=done

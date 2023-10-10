@@ -4,7 +4,6 @@ from pathlib import Path
 from hoo.experiments.simulator import simulate_run
 from hoo.experiments.run_configs import (HOOTRunConfigs,
                                          LDHOOTRunConfigs,
-                                         # tHOOTRunConfigs,
                                          PolyHOOTRunConfigs)
 
 
@@ -90,7 +89,7 @@ def run_tests(args: argparse.Namespace):
 def parse_args():
 
     parser = argparse.ArgumentParser(
-        description='What the program does'
+        description='Parser for HOOT'
     )
 
     parser.add_argument(
@@ -108,10 +107,12 @@ def parse_args():
         "--environment",
         type=str,
         choices=[
+            "acrobot",
             "inverted_pendulum",
             "cartpole",
+            "ig_cartpole",
             "lunar_lander",
-            "mountain_car"
+            "mountain_car",
         ],
         required=True,
         help="Environment for the run",
@@ -155,6 +156,14 @@ def parse_args():
         type=int,
         default=100,
         help="Number of iterations of the HOOT-based algorithm. Default: 100",
+    )
+
+    parser.add_argument(
+        "-cr",
+        "--clip_reward",
+        default=False,
+        action="store_true",
+        help="If True will clip rewards in [0,1]. Default: False",
     )
 
     args = parser.parse_args()
