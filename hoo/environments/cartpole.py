@@ -53,8 +53,6 @@ class ContinuousCartPole(CartPoleEnv, Environment):
 
     def step(self, action, clip_reward: bool = False):
 
-        previous_state = deepcopy(self)
-
         err_msg = f"{action!r} ({type(action)}) invalid"
         assert self.action_space.contains(action), err_msg
         assert self.state is not None, "Call reset before using step method."
@@ -104,7 +102,6 @@ class ContinuousCartPole(CartPoleEnv, Environment):
             self.render()
 
         return StepOutput(
-            previous_state=previous_state,
             reward=reward,
             done=terminated,
         )

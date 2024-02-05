@@ -78,16 +78,15 @@ class HOOT:
         rewards = []
 
         for _ in range(self.search_depth):
-            node, simulation_output = node.select_action(
+            node = node.select_action(
                 sample=sample,
             )
-            rewards.append(simulation_output.reward)
+            rewards.append(node.reward)
 
-            if simulation_output.done:
+            if node.done:
                 break
 
-        rewards = rewards + [simulation_output.reward] * (self.search_depth
-                                                          - len(rewards)) + [0.]
+        rewards = rewards + [node.reward] * (self.search_depth - len(rewards)) + [0.]
         return node, rewards
 
     def backpropagate(

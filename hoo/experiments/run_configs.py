@@ -8,6 +8,7 @@ LIST_OF_ENVIRONMENTS = [
     "ig_cartpole",
     "inverted_pendulum",
     "mountain_car",
+    "smoothed_mountain_car",
     "lunar_lander",
 ]
 

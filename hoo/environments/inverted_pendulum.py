@@ -19,15 +19,12 @@ class InvertedPendulum(PendulumEnv, Environment):
 
     def step(self, action):
 
-        previous_state = deepcopy(self)
         _, reward, done, _, _ = super().step(action)
 
         if self.clip_reward:
             reward = (reward + 16.2736044) / 16.2736044
 
-        return StepOutput(
-            previous_state=previous_state, reward=reward, done=done
-        )
+        return StepOutput(reward=reward, done=done)
 
     @property
     def hoo_action_space(self):

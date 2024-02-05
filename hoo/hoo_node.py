@@ -41,11 +41,8 @@ class HOONode:
 
         self.R = 0
         self.N = 0
-        self.U = -math.inf
-        self.B = -math.inf
+        self.B = math.inf
         self.max_depth = max_depth
-
-        self.ready = False
 
         self.split_dimension = rnd.choice(np.arange(self.dimension))
 
@@ -82,27 +79,28 @@ class HOONode:
         Generates two new HOO nodes to the children, by splitting the action
         space into two halves
         """
-        lower_space, upper_space = self.action_space.split(
-            self.split_dimension
-        )
-
-        self.children.append(
-            HOONode(
-                lower_space,
-                max_depth=self.max_depth,
-                depth=self.h + 1,
-                parent=self,
+        if not self.is_max_depth():
+            lower_space, upper_space = self.action_space.split(
+                self.split_dimension
             )
-        )
 
-        self.children.append(
-            HOONode(
-                upper_space,
-                max_depth=self.max_depth,
-                depth=self.h + 1,
-                parent=self,
+            self.children.append(
+                HOONode(
+                    lower_space,
+                    max_depth=self.max_depth,
+                    depth=self.h + 1,
+                    parent=self,
+                )
             )
-        )
+
+            self.children.append(
+                HOONode(
+                    upper_space,
+                    max_depth=self.max_depth,
+                    depth=self.h + 1,
+                    parent=self,
+                )
+            )
 
     def choose_child(self) -> HOONode:
         """
@@ -126,7 +124,7 @@ class HOONode:
 
         return rnd.choice(best_children)
 
-    def average_reward(self) -> float:
+    def average_reward(self, v1, rho) -> float:
         """
         Calculates the average reward of the node
 
@@ -134,6 +132,6 @@ class HOONode:
             Average reward
         """
         if self.N != 0:
-            return self.R / self.N
+            return self.R / self.N - v1 * (rho**self.h)
         else:
-            return -math.inf
+            return -float("inf")

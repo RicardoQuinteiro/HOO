@@ -28,7 +28,6 @@ class TestFunction(Environment):
     def step(self, action):
 
         return StepOutput(
-            previous_state=self,
             reward=self.function(action[0]),
             done=True,
         )

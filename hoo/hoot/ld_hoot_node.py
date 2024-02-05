@@ -14,6 +14,8 @@ class LDHOOTNode(HOOTNode):
         self,
         state: HOOState,
         ldhoo_max_depth,
+        reward: Optional[float] = None,
+        done: bool = False,
         parent: Optional[LDHOOTNode] = None,
         action: Optional[List] = None,
         gamma: float = 0.99,
@@ -36,6 +38,8 @@ class LDHOOTNode(HOOTNode):
         """
         super().__init__(
             state,
+            reward=reward,
+            done=done,
             parent=parent,
             action=action,
             gamma=gamma,
@@ -44,6 +48,8 @@ class LDHOOTNode(HOOTNode):
             ce=ce,
         )
 
+        self.ldhoo_max_depth = ldhoo_max_depth
+
         self.vars = vars
         self.hoo = LDHOO(
             state,
@@ -51,3 +57,49 @@ class LDHOOTNode(HOOTNode):
             v1=v1,
             ce=ce,
         )
+
+    def select_action(
+        self,
+        sample: bool = True,
+    ) -> LDHOOTNode:
+        """
+        Selects an action using HOO
+
+        Args:
+            sample: if True the action that leads to the following state
+                is randomly sampled from a HOO node. If False the selected
+                action is the center of the action space
+        Returns:
+            A tuple with the node that follows from taking the selected action
+                and an instance of SimulateOutput, which contains the next
+                HOOState, the reward and a boolean that informs whether the
+                next state is terminal or not.
+        """
+        hoo_node = self.hoo.generate_path()
+
+        if sample:
+            action = hoo_node.sample()
+        else:
+            action = hoo_node.center
+
+        child_index = str(hoo_node.center)
+
+        if child_index not in self.children:
+            simulation_output = self.state.simulate(action)
+            next_node = LDHOOTNode(
+                simulation_output.next_state,
+                self.ldhoo_max_depth,
+                reward=simulation_output.reward,
+                done=simulation_output.done,
+                parent=self,
+                action=action,
+                gamma=self.gamma,
+                depth=self.depth + 1,
+                v1=self.v1,
+                ce=self.ce,
+            )
+            self.children[child_index] = next_node
+        else:
+            next_node = self.children[child_index]
+
+        return next_node

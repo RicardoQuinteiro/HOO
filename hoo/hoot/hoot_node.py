@@ -13,6 +13,8 @@ class HOOTNode:
     def __init__(
         self,
         state: HOOState,
+        reward: Optional[float] = None,
+        done: bool = False,
         parent: Optional[HOOTNode] = None,
         action: Optional[List] = None,
         gamma: float = 0.99,
@@ -37,6 +39,8 @@ class HOOTNode:
         self.action = action
         self.depth = depth
         self.gamma = gamma
+        self.reward = reward
+        self.done = done
 
         self.v1 = v1
         self.ce = ce
@@ -48,7 +52,7 @@ class HOOTNode:
     def select_action(
         self,
         sample: bool = True,
-    ) -> Tuple[HOOTNode, SimulateOutput]:
+    ) -> HOOTNode:
         """
         Selects an action using HOO
 
@@ -69,12 +73,14 @@ class HOOTNode:
         else:
             action = hoo_node.center
 
-        simulation_output = self.state.simulate(action)
         child_index = str(hoo_node.center)
 
-        if self.children.get(child_index) is None:
+        if child_index not in self.children:
+            simulation_output = self.state.simulate(action)
             next_node = HOOTNode(
                 simulation_output.next_state,
+                reward=simulation_output.reward,
+                done=simulation_output.done,
                 parent=self,
                 action=action,
                 gamma=self.gamma,
@@ -86,7 +92,7 @@ class HOOTNode:
         else:
             next_node = self.children[child_index]
 
-        return next_node, simulation_output
+        return next_node
 
     def backpropagate(
         self,
@@ -104,8 +110,13 @@ class HOOTNode:
         cumulative_reward = sum(
             [r*self.gamma**i for i, r in enumerate(rewards[self.depth:])]
         )
+        max_reward = sum(
+            [self.gamma**i for i, r in enumerate(rewards[self.depth:])]
+        )
+        normalized_reward = cumulative_reward / max_reward
+        
+        self.hoo.backpropagate(normalized_reward, t)
 
-        self.hoo.backpropagate(cumulative_reward, t)
         if not self.root():
             self.parent.backpropagate(rewards, t)
 

@@ -183,10 +183,10 @@ class LunarLander(LunarLanderEnv, Environment):
             self.render()
 
     def step(self, action, clip_reward: bool = False):
-
+        print(self.world)
         previous_state = deepcopy(self)
         _, reward, done, _, _ = super().step(action)
-
+        print("previous_state:", previous_state.world)
         return StepOutput(
             previous_state=previous_state, reward=reward, done=done
         )

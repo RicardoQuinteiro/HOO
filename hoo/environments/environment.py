@@ -11,7 +11,6 @@ from hoo.state_actions.action_space import HOOActionSpace
 @dataclass
 class StepOutput:
 
-    previous_state: Environment
     reward: float
     done: bool
 

@@ -39,8 +39,6 @@ class ContinuousAcrobot(AcrobotEnv, Environment):
 
     def step(self, a):
 
-        previous_state = deepcopy(self)
-
         s = self.state
         assert s is not None, "Call reset before using AcrobotEnv object."
         torque = a[0]
@@ -69,7 +67,6 @@ class ContinuousAcrobot(AcrobotEnv, Environment):
             self.render()
 
         return StepOutput(
-            previous_state=previous_state,
             reward=reward,
             done=terminated,
         )
