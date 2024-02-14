@@ -2,13 +2,13 @@
 
 This repository contains implementations of algorithms based in Hierarchical Optimistic Optimization (HOO) [1].
 
-Bandit algorithms in the repository:
+**Bandit algorithms in the repository:**
 - Hierarchical Optimistic Optimization (HOO) [1];
 - Truncated Hierarchical Optimistic Optimization (tHOO) [1];
 - Polynomial Hierarchical Optimistic Optimization (Poly HOO) [2];
 - Limited Depth Hierarchical Optimistic Optimization (LD HOO).
 
-Continuous Monte Carlo Tree Search algorithms:
+**Continuous Monte Carlo Tree Search algorithms:**
 - Hierarchical Optimistic Optimization applied to Trees (HOOT) [3];
 - Polynomial Hierarchical Optimistic Optimization applied to Trees (Poly HOOT) [2];
 - Limited Depth Hierarchical Optimistic Optimization applied to Trees (LD HOOT).
