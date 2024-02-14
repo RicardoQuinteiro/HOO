@@ -85,7 +85,7 @@ class PolyHOOTNode(HOOTNode):
 
         if child_index not in self.children:
             simulation_output = self.state.simulate(action)
-            next_node = PolyLDHOOTNode(
+            next_node = PolyHOOTNode(
                 simulation_output.next_state,
                 self.polyhoo_max_depth,
                 reward=simulation_output.reward,
