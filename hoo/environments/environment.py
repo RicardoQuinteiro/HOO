@@ -11,7 +11,6 @@ from hoo.state_actions.action_space import HOOActionSpace
 @dataclass
 class StepOutput:
 
-    previous_state: Environment
     reward: float
     done: bool
 
@@ -19,7 +18,7 @@ class StepOutput:
 class Environment(ABC):
 
     @abstractmethod
-    def step(self, action) -> StepOutput:
+    def step(self, action, clip_reward: bool) -> StepOutput:
         pass
 
     @property

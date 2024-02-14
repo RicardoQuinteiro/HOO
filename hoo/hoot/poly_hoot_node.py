@@ -1,7 +1,7 @@
 """Module that implements a Poly-HOOT node"""
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
 
 from hoo.state_actions.hoo_state import HOOState
 from hoo.poly_hoo import PolyHOO, PolyHOOConstants
@@ -15,6 +15,7 @@ class PolyHOOTNode(HOOTNode):
         state: HOOState,
         polyhoo_max_depth,
         parent: Optional[PolyHOOTNode] = None,
+        action: Optional[List] = None,
         gamma: float = 0.99,
         depth: int = 0,
         v1: Optional[float] = None,
@@ -38,9 +39,14 @@ class PolyHOOTNode(HOOTNode):
         super().__init__(
             state,
             parent=parent,
-            depth=depth,
+            action=action,
             gamma=gamma,
+            depth=depth,
+            v1=v1,
+            ce=ce,
         )
+
+        self.polyhoo_max_depth
 
         self.vars = vars
         self.hoo = PolyHOO(
@@ -50,3 +56,49 @@ class PolyHOOTNode(HOOTNode):
             ce=ce,
             polyhoo_constants=polyhoo_constants,
         )
+
+    def select_action(
+        self,
+        sample: bool = True,
+    ) -> PolyHOOTNode:
+        """
+        Selects an action using HOO
+
+        Args:
+            sample: if True the action that leads to the following state
+                is randomly sampled from a HOO node. If False the selected
+                action is the center of the action space
+        Returns:
+            A tuple with the node that follows from taking the selected action
+                and an instance of SimulateOutput, which contains the next
+                HOOState, the reward and a boolean that informs whether the
+                next state is terminal or not.
+        """
+        hoo_node = self.hoo.generate_path()
+
+        if sample:
+            action = hoo_node.sample()
+        else:
+            action = hoo_node.center
+
+        child_index = str(hoo_node.center)
+
+        if child_index not in self.children:
+            simulation_output = self.state.simulate(action)
+            next_node = PolyHOOTNode(
+                simulation_output.next_state,
+                self.polyhoo_max_depth,
+                reward=simulation_output.reward,
+                done=simulation_output.done,
+                parent=self,
+                action=action,
+                gamma=self.gamma,
+                depth=self.depth + 1,
+                v1=self.v1,
+                ce=self.ce,
+            )
+            self.children[child_index] = next_node
+        else:
+            next_node = self.children[child_index]
+
+        return next_node

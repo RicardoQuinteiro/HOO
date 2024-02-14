@@ -38,9 +38,8 @@ class HOOState:
                 the reward of doing the input action and a boolean (done)
                 that informs if the action leads to a terminal state
         """
-        action_output = self.env_state.step(action)
         next_env_state = deepcopy(self)
-        self.env_state = action_output.previous_state
+        action_output = next_env_state.env_state.step(action)
 
         return SimulateOutput(
             next_state=next_env_state,
@@ -51,3 +50,7 @@ class HOOState:
     @property
     def dimension(self):
         return self.action_space.dim
+
+    @property
+    def max_reward(self):
+        return self.env_state.max_reward

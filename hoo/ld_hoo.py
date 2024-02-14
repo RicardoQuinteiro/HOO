@@ -14,7 +14,7 @@ class LDHOO(HOO):
     def __init__(
         self,
         state: HOOState,
-        max_depth:  Union[int, float],
+        max_depth: Union[int, float],
         v1: Optional[float] = None,
         ce: float = 1.,
     ):

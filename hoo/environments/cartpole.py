@@ -10,6 +10,7 @@ discrete space
 """
 import math
 from copy import deepcopy
+from typing import Optional
 
 import numpy as np
 from gym import spaces
@@ -19,7 +20,7 @@ from hoo.environments.environment import Environment, StepOutput
 from hoo.state_actions.action_space import HOOActionSpace
 
 
-class ContinuousCartPole(Environment, CartPoleEnv):
+class ContinuousCartPole(CartPoleEnv, Environment):
 
     def __init__(
         self,
@@ -27,10 +28,13 @@ class ContinuousCartPole(Environment, CartPoleEnv):
         masscart: float = 1.0,
         masspole: float = 0.1,
         length: float = 0.5,
-        tau: float = 0.2,
+        tau: float = 0.02,
         force_mag: float = 10.0,
+        seed: Optional[int] = None,
+        clip_reward: bool = False,
     ):
         super().__init__()
+        self.clip_reward = clip_reward
 
         self.force_mag = force_mag
         self.action_space = spaces.Box(
@@ -45,11 +49,9 @@ class ContinuousCartPole(Environment, CartPoleEnv):
         self.polemass_length = self.masspole * self.length
         self.tau = tau
 
-        self.reset()
+        self.reset(seed=seed)
 
-    def step(self, action):
-
-        previous_state = deepcopy(self)
+    def step(self, action, clip_reward: bool = False):
 
         err_msg = f"{action!r} ({type(action)}) invalid"
         assert self.action_space.contains(action), err_msg
@@ -61,7 +63,7 @@ class ContinuousCartPole(Environment, CartPoleEnv):
         # For the interested reader:
         # https://coneural.org/florian/papers/05_cart_pole.pdf
         temp = (
-            action + self.polemass_length * theta_dot**2 * sintheta
+            action[0] + self.polemass_length * theta_dot**2 * sintheta
         ) / self.total_mass
         thetaacc = (self.gravity * sintheta - costheta * temp) / (
             self.length
@@ -82,7 +84,7 @@ class ContinuousCartPole(Environment, CartPoleEnv):
             theta_dot = theta_dot + self.tau * thetaacc
             theta = theta + self.tau * theta_dot
 
-        self.state = (x, x_dot, theta, theta_dot)
+        self.state = np.array((x, x_dot, theta, theta_dot))
 
         terminated = bool(
             x < -self.x_threshold
@@ -93,19 +95,13 @@ class ContinuousCartPole(Environment, CartPoleEnv):
 
         if not terminated:
             reward = 1.0
-        elif self.steps_beyond_terminated is None:
-            # Pole just fell!
-            self.steps_beyond_terminated = 0
-            reward = 1.0
         else:
-            self.steps_beyond_terminated += 1
             reward = 0.0
 
         if self.render_mode == "human":
             self.render()
 
         return StepOutput(
-            previous_state=previous_state,
             reward=reward,
             done=terminated,
         )
@@ -113,3 +109,18 @@ class ContinuousCartPole(Environment, CartPoleEnv):
     @property
     def hoo_action_space(self):
         return HOOActionSpace([(-self.force_mag, self.force_mag)])
+
+
+class IGContinuousCartPole(ContinuousCartPole):
+
+    def __init__(self, seed: Optional[int] = None, clip_reward=False):
+        super().__init__(
+            gravity=50.,
+            masscart=1.0,
+            masspole=0.5,
+            length=2.,
+            tau=0.02,
+            force_mag=10.0,
+            seed=seed,
+            clip_reward=clip_reward,
+        )

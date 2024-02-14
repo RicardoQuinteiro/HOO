@@ -30,17 +30,13 @@ class HOO:
         self.root = HOONode(state.action_space)
         self.m = self.root.dimension
 
-        if v1:
-            self.v1 = v1
-        else:
-            self.v1 = 4 * self.m
-
-        self.rho = 1.0 / (4**self.m)
+        self.v1 = v1 if v1 is not None else 4 * self.m
+        self.rho = 2**(-2 / self.m)  # 1.0 / (4**self.m)
         self.ce = ce
 
         self.path = []
 
-    def run(self, n: int) -> List[float]:
+    def run(self, n: int, sample: bool = True) -> List[float]:
         """
         Runs n iterations of HOO
 
@@ -49,16 +45,14 @@ class HOO:
         Returns:
             A recommended action sampled from the best node
         """
-        for t in range(n):
+        for t in range(1, n + 1):
             selected_node = self.generate_path()
-
-            action = selected_node.sample()
+            action = selected_node.sample() if sample else selected_node.center
             reward = self.state.simulate(action).reward
 
-            self.backpropagate(reward, t+1)
+            self.backpropagate(reward, t)
 
-        best_node = self.choose_best_node(self.root)
-        return best_node.sample()
+        return self.choose_best_action(sample=sample)
 
     def generate_path(self) -> None:
         """
@@ -99,37 +93,9 @@ class HOO:
             node.N += 1
             node.R += reward
 
-        self.update_U_B(self.root, t)
+        self.update_B(self.root, t)
 
-    def update_U_B(self, node: HOONode, t: int) -> None:
-        """
-        Updates the values of the U and B-values of the HOO tree's nodes
-
-        The update is done from top to bottom, starting in the input node
-        and updating its U-values. When it arrives to a leaf node, it will
-        call update_B function, which will recursively update the B-values
-        from bottom to top until the root node.
-
-        Args:
-            node: node where the recursion of the U and B-values updates begins
-            t: time-step of the algorithm
-        """
-        node.ready = True
-
-        if node.N > 0:
-            node.U = (
-                node.R / node.N
-                + self.ce * math.sqrt((2.0 * math.log(t)) / node.N)
-                + self.v1 * (self.rho**node.h)
-            )
-
-        for child in node.children:
-            self.update_U_B(child, t)
-
-        if node.leaf():
-            self.update_B(node)
-
-    def update_B(self, node: HOONode) -> None:
+    def update_B(self, node: HOONode, t: int) -> None:
         """
         Updates the values of the B-values of the HOO tree's nodes
 
@@ -142,16 +108,29 @@ class HOO:
         Args:
             node: node where the recursion of the B-values updates begins
         """
-        if node.ready:
-            node.ready = False
-
-            if node.leaf():
-                node.B = node.U
+        if node.leaf():
+            if node.N > 0:
+                node.B = (
+                    node.R / node.N
+                    + self.ce * math.sqrt((2.0 * math.log(t)) / node.N)
+                    + self.v1 * (self.rho**node.h)
+                )
             else:
-                node.B = min(node.U, max([x.B for x in node.children]))
+                node.B = math.inf
 
-            if not node.root():
-                self.update_B(node.parent)
+            return
+
+        for child in node.children:
+            self.update_B(child, t)
+
+        if node.N > 0:
+            u = (
+                node.R / node.N
+                + self.ce * math.sqrt((2.0 * math.log(t)) / node.N)
+                + self.v1 * (self.rho**node.h)
+            )
+        else:
+            u = math.inf
 
     def choose_best_node(self, node: HOONode) -> HOONode:
         """
@@ -165,28 +144,35 @@ class HOO:
         if node.leaf():
             return node
         else:
-            current_max = node.R / node.N
-            current_child = node
+            current_max = node.average_reward(self.v1, self.rho)
+            current_node = node
 
             for child in node.children:
                 child_best = self.choose_best_node(child)
 
-                if child_best.average_reward() > current_max:
-                    current_child = child_best
-                    current_max = child_best.average_reward()
+                if child_best.average_reward(self.v1, self.rho) >= current_max:
+                    current_node = child_best
+                    current_max = child_best.average_reward(self.v1, self.rho)
 
-            if current_max >= node.average_reward():
+            return current_node
+            """if current_max >= node.average_reward():
                 return current_child
             else:
-                return node
+                return node"""
 
-    def choose_best_action(self):
+    def choose_best_action(self, sample: bool = True):
         """
         Returns an action sampled from the best node
 
+        Args:
+            sample: if True will sample an action from node's actions space,
+                otherwise returns the center
         Returns:
             An action sampled from the node with the current highest
                 average reward
         """
         best_node = self.choose_best_node(self.root)
-        return best_node.sample()
+        if sample:
+            return best_node.sample()
+        else:
+            return best_node.center

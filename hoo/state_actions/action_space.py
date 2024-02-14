@@ -1,6 +1,7 @@
 """Module that implements a HOO action space"""
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import List, Tuple
 
 import numpy.random as rnd
@@ -19,7 +20,7 @@ class HOOActionSpace:
 
     @property
     def center(self) -> List[float]:
-        [(a + b) / 2.0 for a, b in self.space]
+        return [(a + b) / 2.0 for a, b in self.space]
 
     @property
     def low(self) -> List[float]:
@@ -43,18 +44,12 @@ class HOOActionSpace:
             self.low[split_dimension] + self.high[split_dimension]
         ) / 2.0
 
-        lower_space = HOOActionSpace(
-            [
-                t if i != split_dimension else (t[0], boundary)
-                for i, t in enumerate(self.space)
-            ]
-        )
+        lower = deepcopy(self.space)
+        lower[split_dimension] = (lower[split_dimension][0], boundary)
+        lower_space = HOOActionSpace(lower)
 
-        upper_space = HOOActionSpace(
-            [
-                t if i != split_dimension else (boundary, t[1])
-                for i, t in enumerate(self.space)
-            ]
-        )
+        upper = deepcopy(self.space)
+        upper[split_dimension] = (boundary, upper[split_dimension][1])
+        upper_space = HOOActionSpace(upper)
 
         return lower_space, upper_space
