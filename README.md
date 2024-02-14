@@ -1,4 +1,4 @@
-# HOO
+# Hierarchical Optimistic Optimization (HOO)
 
 This repository contains implementations of algorithms based in Hierarchical Optimistic Optimization (HOO) [1].
 
