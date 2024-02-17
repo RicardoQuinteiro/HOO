@@ -54,3 +54,6 @@ class HOOState:
     @property
     def max_reward(self):
         return self.env_state.max_reward
+    
+    def get_state(self):
+        return self.env_state.get_state()

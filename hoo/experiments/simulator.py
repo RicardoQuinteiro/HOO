@@ -78,7 +78,7 @@ def generate_hoot_path(configs: HOOTRunConfigs):
         state = simulate_output.next_state
         output["rewards"].append(simulate_output.reward)
         output["actions"].append(action)
-        output["state"].append(state.env_state.state)
+        output["state"].append(state.get_state())
 
         hoot_algorithm = STR_TO_ALGORITHM[configs.algorithm](
             configs.search_depth,
@@ -88,13 +88,16 @@ def generate_hoot_path(configs: HOOTRunConfigs):
     final_time = time.time()
 
     output["running_time"] = final_time - initial_time
-    return output
+    
+    return {
+        **output,
+        **configs.to_dict(),
+    }
 
 
 def simulate_run(
     configs: HOOTRunConfigs,
     path: Optional[Union[str, Path]] = None,
-    save: bool = False,
 ):
 
     run_output = generate_hoot_path(configs)
@@ -105,21 +108,13 @@ def simulate_run(
     else:
         filename = now.replace(" ", "__").replace(":", "_")
 
-    output = {
-        **run_output,
-        **configs.to_dict(),
-        "date": now,
-    }
+    run_output["date"] = now
 
-    if save:
-        if not path or not isinstance(path, (str, Path)):
-            raise ValueError("If save is True, a valid path should be \
-provided as a str or a Path")
-
+    if path:
         if not Path(path).exists():
             Path(path).mkdir(parents=True)
 
         with open(f"{path}/{filename}.json", "w") as jfile:
-            json.dump(output, jfile)
+            json.dump(run_output, jfile)
 
-    return output
+    return run_output
