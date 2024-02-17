@@ -29,3 +29,6 @@ class InvertedPendulum(PendulumEnv, Environment):
     @property
     def hoo_action_space(self):
         return HOOActionSpace([(-self.max_torque, self.max_torque)])
+    
+    def get_state(self):
+        return [float(s) for s in self.state]

@@ -37,6 +37,9 @@ class MountainCar(Continuous_MountainCarEnv, Environment):
     @property
     def hoo_action_space(self):
         return HOOActionSpace([(self.min_action, self.max_action)])
+    
+    def get_state(self):
+        return [float(s) for s in self.state]
 
 
 class SmoothedMountainCar(MountainCar, Environment):

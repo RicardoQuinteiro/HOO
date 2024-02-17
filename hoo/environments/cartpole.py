@@ -109,6 +109,9 @@ class ContinuousCartPole(CartPoleEnv, Environment):
     @property
     def hoo_action_space(self):
         return HOOActionSpace([(-self.force_mag, self.force_mag)])
+    
+    def get_state(self):
+        return [float(s) for s in self.state]
 
 
 class IGContinuousCartPole(ContinuousCartPole):
