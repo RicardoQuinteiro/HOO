@@ -13,7 +13,6 @@ from hoo.hoot.hoot import HOOT
 from hoo.hoot.ld_hoot import LDHOOT
 from hoo.hoot.poly_hoot import PolyHOOT
 from hoo.environments.acrobot import ContinuousAcrobot
-from hoo.environments.lunar_lander import LunarLander
 from hoo.environments.mountain_car import MountainCar, SmoothedMountainCar
 from hoo.environments.cartpole import ContinuousCartPole, IGContinuousCartPole
 from hoo.environments.inverted_pendulum import InvertedPendulum
@@ -34,7 +33,6 @@ STR_TO_ENVIRONMENT = {
     "inverted_pendulum": InvertedPendulum,
     "mountain_car": MountainCar,
     "smoothed_mountain_car": SmoothedMountainCar,
-    "lunar_lander": LunarLander,
 }
 
 
@@ -47,6 +45,7 @@ def generate_hoot_path(configs: HOOTRunConfigs):
     output = {
         "actions": [],
         "rewards": [],
+        "state": [],
     }
 
     state = HOOState(
@@ -55,6 +54,7 @@ def generate_hoot_path(configs: HOOTRunConfigs):
             clip_reward=configs.clip_reward,
         )
     )
+
     hoot_algorithm = STR_TO_ALGORITHM[configs.algorithm].from_configs(
         configs,
         state,
@@ -78,7 +78,7 @@ def generate_hoot_path(configs: HOOTRunConfigs):
         state = simulate_output.next_state
         output["rewards"].append(simulate_output.reward)
         output["actions"].append(action)
-        #print(action)
+        output["state"].append(state.env_state.state)
 
         hoot_algorithm = STR_TO_ALGORITHM[configs.algorithm](
             configs.search_depth,

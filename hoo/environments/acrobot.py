@@ -74,3 +74,6 @@ class ContinuousAcrobot(AcrobotEnv, Environment):
     @property
     def hoo_action_space(self):
         return HOOActionSpace([(-1.0, 1.0)])
+    
+    def get_state(self):
+        return [float(s) for s in self.state]
