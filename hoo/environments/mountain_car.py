@@ -4,8 +4,9 @@ Mountain Car environment
 """
 import math
 from copy import deepcopy
-from typing import Optional
+from typing import List, Optional
 
+import numpy as np
 from gym.envs.classic_control import Continuous_MountainCarEnv
 
 from hoo.environments.environment import Environment, StepOutput
@@ -19,11 +20,18 @@ class MountainCar(Continuous_MountainCarEnv, Environment):
             render_mode: Optional[str] = None,
             goal_velocity=0,
             seed: Optional[int] = None,
-            clip_reward: bool = False
+            clip_reward: bool = False,
+            initial_state_range: Optional[List] = None, # Test in the range [-0.8, -0.2]
     ):
         super().__init__(render_mode=render_mode, goal_velocity=goal_velocity)
         self.reset(seed=seed)
         self.clip_reward = clip_reward
+
+        if initial_state_range is not None:
+            np.random.seed(seed)
+            self.state = np.array([
+                np.random.uniform(*initial_state_range), 0.
+            ])
 
     def step(self, action):
 
@@ -49,11 +57,23 @@ class SmoothedMountainCar(MountainCar, Environment):
             render_mode: Optional[str] = None,
             goal_velocity=0,
             seed: Optional[int] = None,
-            clip_reward: bool = False
+            clip_reward: bool = False,
+            initial_state_range: Optional[List] = [-0.6, -0.4],
     ):
-        super().__init__(render_mode=render_mode, goal_velocity=goal_velocity)
+        super().__init__(
+            render_mode=render_mode,
+            goal_velocity=goal_velocity,
+            initial_state_range=initial_state_range
+        )
+        
         self.reset(seed=seed)
         self.clip_reward = clip_reward
+
+        if initial_state_range is not None:
+            np.random.seed(seed)
+            self.state = np.array([
+                np.random.uniform(*initial_state_range), 0.
+            ])
 
     def step(self, action):
 
