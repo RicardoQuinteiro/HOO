@@ -107,11 +107,11 @@ def parse_args():
         "--environment",
         type=str,
         choices=[
-            "acrobot",
+            #"acrobot",
             "inverted_pendulum",
             "cartpole",
             "ig_cartpole",
-            "lunar_lander",
+            #"lunar_lander",
             "mountain_car",
         ],
         required=True,
