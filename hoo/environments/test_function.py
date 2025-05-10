@@ -35,8 +35,12 @@ class TestFunction(Environment):
     @property
     def hoo_action_space(self):
         return HOOActionSpace(self.domain)
+    
+    def get_state(self):
+        return [float(s) for s in self.state]
 
-    def plot(self):
+    def plot(self) -> None:
+
         if len(self.domain) != 1:
             print("Cannot plot a function that is not 1-dimensional")
         else:
