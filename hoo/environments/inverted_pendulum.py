@@ -12,8 +12,13 @@ from hoo.state_actions.action_space import HOOActionSpace
 
 
 class InvertedPendulum(PendulumEnv, Environment):
-    def __init__(self, seed: Optional[int] = None, clip_reward=False):
-        super().__init__()
+    def __init__(
+            self,
+            seed: Optional[int] = None,
+            clip_reward = False,
+            render_mode: Optional[str] = None,
+        ):
+        super().__init__(render_mode=render_mode)
         self.reset(seed=seed)
         self.clip_reward = clip_reward
 
