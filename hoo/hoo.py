@@ -42,6 +42,8 @@ class HOO:
 
         Args:
             n: number of iterations to run the algorithm
+            sample: a boolean that determines if the algorithm should sample
+                or choose the center of a node as the action to take
         Returns:
             A recommended action sampled from the best node
         """
@@ -115,8 +117,6 @@ class HOO:
                     + self.ce * math.sqrt((2.0 * math.log(t)) / node.N)
                     + self.v1 * (self.rho**node.h)
                 )
-            else:
-                node.B = math.inf
 
             return
 
@@ -131,6 +131,8 @@ class HOO:
             )
         else:
             u = math.inf
+
+        node.B = min(u, max([n.B for n in node.children]))
 
     def choose_best_node(self, node: HOONode) -> HOONode:
         """

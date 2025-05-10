@@ -14,7 +14,6 @@ class tHOO(HOO):
     def __init__(
         self,
         state: HOOState,
-        n0: int,
         v1: Optional[float] = None,
         ce: float = 1.,
     ):
@@ -23,14 +22,13 @@ class tHOO(HOO):
 
         Args:
             state: initial state
-            n0: number of iterations to run the algorithm
             v1: parameter of the algorithm as defined in the paper
             ce: exploration constant that gives more emphasis to exploring
                 less appealing nodes the higher it its
         """
         super().__init__(state, v1=v1, ce=ce)
 
-    def run(self, n: int) -> List[float]:
+    def run(self, n: int, sample: bool = True) -> List[float]:
         """
         Runs n iterations of tHOO
 
@@ -41,28 +39,25 @@ class tHOO(HOO):
         """
         self.n0 = n
 
-        return super().run(n)
+        return super().run(n, sample=sample)
 
-    def update_U_B(self):
+    def update_B(self):
         """
-        Updates the values of the U and B-values of the HOO tree's nodes
+        Updates the B-values of the tHOO tree's nodes
 
         The update is done only on the nodes that belong to the path followed
         in a certain iteration of the algorithm
         """
-
-        # Updating U-values of the nodes in the path
-        for node in self.path:
-            node.U = (
-                node.R / node.N
-                + self.ce * math.sqrt((2.0 * math.log(self.n0)) / node.N)
-                + self.v1 * (self.rho**node.h)
-            )
         node = self.path[-1]
 
         # Updating the B-values of the nodes in the path from bottom to top
         while not node.root():
-            node.B = min(node.U, max([x.B for x in node.children]))
+            u = (
+                node.R / node.N
+                + self.ce * math.sqrt((2.0 * math.log(self.n0)) / node.N)
+                + self.v1 * (self.rho**node.h)
+            )
+            node.B = min(u, max([x.B for x in node.children]))
             node = node.parent
 
     def backpropagate(self, reward: float, t: int) -> None:
@@ -81,4 +76,4 @@ class tHOO(HOO):
             node.N += 1
             node.R += reward
 
-        self.update_U_B()
+        self.update_B()
