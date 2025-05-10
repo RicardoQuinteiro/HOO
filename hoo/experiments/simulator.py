@@ -8,15 +8,16 @@ from typing import Optional, Union
 import numpy as np
 from tqdm.auto import tqdm
 
-from hoo.state_actions.hoo_state import HOOState
 from hoo.hoot.hoot import HOOT
 from hoo.hoot.ld_hoot import LDHOOT
 from hoo.hoot.poly_hoot import PolyHOOT
+from hoo.state_actions.hoo_state import HOOState
+from hoo.experiments.run_configs import HOOTRunConfigs
 from hoo.environments.acrobot import ContinuousAcrobot
+from hoo.environments.inverted_pendulum import InvertedPendulum
 from hoo.environments.mountain_car import MountainCar, SmoothedMountainCar
 from hoo.environments.cartpole import ContinuousCartPole, IGContinuousCartPole
-from hoo.environments.inverted_pendulum import InvertedPendulum
-from hoo.experiments.run_configs import HOOTRunConfigs
+
 
 
 STR_TO_ALGORITHM = {
@@ -98,6 +99,7 @@ def generate_hoot_path(configs: HOOTRunConfigs):
 def simulate_run(
     configs: HOOTRunConfigs,
     path: Optional[Union[str, Path]] = None,
+    save: bool = True,
 ):
 
     run_output = generate_hoot_path(configs)
@@ -110,7 +112,7 @@ def simulate_run(
 
     run_output["date"] = now
 
-    if path:
+    if path and save:
         if not Path(path).exists():
             Path(path).mkdir(parents=True)
 
