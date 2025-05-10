@@ -34,7 +34,7 @@ def run_tests(args: argparse.Namespace):
             simulate_run(
                 hoot_configs,
                 path=path,
-                save=True,
+                #save=True,
             )
 
     # LD-HOOT
@@ -58,7 +58,7 @@ def run_tests(args: argparse.Namespace):
             simulate_run(
                 ldhoot_configs,
                 path=path,
-                save=True,
+                #save=True,
             )
 
     # Poly-HOOT
@@ -82,7 +82,7 @@ def run_tests(args: argparse.Namespace):
             simulate_run(
                 poly_hoot_configs,
                 path=path,
-                save=True,
+                #save=True,
             )
 
 
