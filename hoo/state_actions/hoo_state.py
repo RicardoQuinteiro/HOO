@@ -17,7 +17,7 @@ class SimulateOutput:
 
 class HOOState:
 
-    def __init__(self, env_state: Environment):
+    def __init__(self, env_state: Environment) -> None:
         """
         Initializes a HOOState instance
 
@@ -27,7 +27,7 @@ class HOOState:
         self.env_state = env_state
         self.action_space = env_state.hoo_action_space
 
-    def simulate(self, action):
+    def simulate(self, action) -> SimulateOutput:
         """
         Simulates an action in this state
 
@@ -48,11 +48,11 @@ class HOOState:
         )
 
     @property
-    def dimension(self):
+    def dimension(self) -> int:
         return self.action_space.dim
 
     @property
-    def max_reward(self):
+    def max_reward(self) -> float:
         return self.env_state.max_reward
     
     def get_state(self):
