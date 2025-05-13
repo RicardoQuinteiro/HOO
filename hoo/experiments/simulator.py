@@ -55,12 +55,13 @@ def generate_hoot_path(configs: HOOTRunConfigs):
             clip_reward=configs.clip_reward,
         )
     )
+    output["state"].append(state.get_state())
 
     hoot_algorithm = STR_TO_ALGORITHM[configs.algorithm].from_configs(
         configs,
         state,
     )
-
+    
     initial_time = time.time()
     for _ in tqdm(range(configs.n_actions)):
 
