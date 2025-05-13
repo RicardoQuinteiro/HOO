@@ -123,14 +123,11 @@ class HOO:
         for child in node.children:
             self.update_B(child, t)
 
-        if node.N > 0:
-            u = (
-                node.R / node.N
-                + self.ce * math.sqrt((2.0 * math.log(t)) / node.N)
-                + self.v1 * (self.rho**node.h)
-            )
-        else:
-            u = math.inf
+        u = (
+            node.R / node.N
+            + self.ce * math.sqrt((2.0 * math.log(t)) / node.N)
+            + self.v1 * (self.rho**node.h)
+        )
 
         node.B = min(u, max([n.B for n in node.children]))
 
